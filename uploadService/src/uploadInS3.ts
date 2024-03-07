@@ -20,6 +20,5 @@ export const upload= async (filePath:string , fileName:string)=>{
             Key: fileName
         }
     ).promise()
-    console.log(upl);
 }
 
