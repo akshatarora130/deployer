@@ -14,9 +14,21 @@ const subscriber = createClient({
     }
 });
 
+const publisher = createClient({
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+        host: process.env.REDIS_HOST,
+        port: 11801
+    }
+});
+
 subscriber.connect().then(() => {
     main();
 });
+
+publisher.connect().then(() => {
+
+})
 
 const main = async () => {
     while(1){
@@ -36,5 +48,6 @@ const main = async () => {
         console.log("Build Complete");
         await copyFinalDist(id);
         console.log("Upload completed");
+        await publisher.hSet("status", id, "deployed");
     }
 }

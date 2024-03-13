@@ -15,11 +15,22 @@ const publisher = createClient({
         port: 11801
     }
 });
-publisher.connect().then(() => {
-    app.listen(3000, () => {
-        console.log("Server started");
-    })
+
+const subscriber = createClient({
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+        host: process.env.REDIS_HOST,
+        port: 11801
+    }
 });
+
+publisher.connect().then(() => {
+
+});
+
+subscriber.connect().then(() => {
+
+})
 
 const app = express();
 app.use(cors());
@@ -33,11 +44,22 @@ app.post("/deploy" , async (req , res)=>{
     for (const file of files) {
         await upload(file,file.slice(__dirname.length+1));
     }
-    // await new Promise((res , rej)=>{
-    //     setTimeout(res , 5000);
-    // })
+    await new Promise((res , rej)=>{
+        setTimeout(res , 5000);
+    })
     await publisher.rPush("toBuildQueue" , id);
+    await publisher.hSet("status", id, "uploaded");
     res.json(id);
 })
 
-// testing
+app.get("/status", async (req, res) => {
+    const id = req.query.id;
+    const response = await subscriber.hGet("status", id as string);
+    res.json({
+        status: response
+    })
+})
+
+app.listen(3000, () => {
+    console.log("Server started");
+})
