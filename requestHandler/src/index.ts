@@ -9,6 +9,8 @@ const s3 = new S3({
     secretAccessKey: process.env.AWS_SECRETKEY
 })
 
+const port = process.env.PORT
+
 const app = express();
 
 app.get("/*", async (req, res) => {
@@ -28,6 +30,6 @@ app.get("/*", async (req, res) => {
     res.send(contents.Body);
 })
 
-app.listen(3001, () => {
+app.listen(port, () => {
     console.log("Server started");
 })

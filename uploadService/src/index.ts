@@ -32,6 +32,8 @@ subscriber.connect().then(() => {
 
 })
 
+const port = process.env.PORT
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -49,7 +51,9 @@ app.post("/deploy" , async (req , res)=>{
     })
     await publisher.rPush("toBuildQueue" , id);
     await publisher.hSet("status", id, "uploaded");
-    res.json(id);
+    res.json({
+        id : id
+    });
 })
 
 app.get("/status", async (req, res) => {
@@ -60,6 +64,6 @@ app.get("/status", async (req, res) => {
     })
 })
 
-app.listen(3000, () => {
-    console.log("Server started");
+app.listen(port, () => {
+    console.log("Upload service started");
 })
